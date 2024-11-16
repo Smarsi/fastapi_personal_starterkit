@@ -1,29 +1,33 @@
 from fastapi import Request, HTTPException
 
 # Logs Import
-from logger_config import log_writer, log_rename
+from logger_config import Logger
 
 # DAOS Import
 # from app.daos.route_dao import nt_route_DAO
 # route_dao = nt_route_DAO()
+from app.daos.user_dao import UserDAO
 
 # Utils Import
 from app.utils.token_manager import decode as token_decoder
 
 
 async def verify_authentication(request: Request):
-    log_file = request.state.log_file
+    user_dao = UserDAO()
+    logger: Logger = request.state.logger
     authorization = request.headers.get('authorization')
     if authorization:
-        decoded_token = await token_decoder(str(authorization.split(" ")[1]))  # Passing token
-        log_writer(log_file, f"VERIFY AUTHENTICATION - Result of decoded token {decoded_token}")
-        if 'id_account' in decoded_token:
-            request.state.log_file = log_rename(log_file, decoded_token['id_account'])
+        token = str(authorization.split(" ")[1])
+        decoded_token = await token_decoder(token)  # Passing token
+        logger.write(f"VERIFY AUTHENTICATION - Result of decoded token {decoded_token}")
+        user = await user_dao.get_user_by_token(token, logger)
+        if user and 'id_user' in decoded_token:
             request.state.requester = {"authenticated": True, "decoded_token": decoded_token}
             return {
                 "authenticated": True,
                 "decoded_token": decoded_token               
             }
+        raise HTTPException(status_code=401, detail="Unauthorized - Invalid Token")
     raise HTTPException(status_code=401, detail="Unauthorized - Token not provided")
 
 # CAUTION: Used in case you want to control the permissions via database (using tables and registries)

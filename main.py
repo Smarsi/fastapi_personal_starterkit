@@ -4,8 +4,12 @@ import logging.config
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError, HTTPException
-from app.api.middlewares.setup_request import setup_request
 from fastapi.openapi.utils import get_openapi
+from contextlib import asynccontextmanager
+
+# Middleware Import
+from app.api.middlewares.setup_request import setup_request
+
 
 # Database Import
 from app.database.connection import get_database, connect_to_database, close_database_connection
@@ -18,8 +22,25 @@ from app.api.routes import router, get_tags_description
 
 log = logging.getLogger("uvicorn")
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup event
+    # db = get_database()
+    # await connect_to_database(db)
+    logging.info(
+        "Starting Up..."
+    )
+
+    yield
+
+    # Shutdown event
+    # await close_database_connection()
+    logging.info(
+        "Shutting Down"
+    )
+
 def create_application() -> FastAPI:
-    application = FastAPI()
+    application = FastAPI(lifespan=lifespan)
     application.include_router(
         router,
         prefix="/api"
@@ -82,19 +103,3 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
 # This handler is commented because it need to be declared on global middleware (cannot be used here when a global middleware is registred)
 # Use this handler only in case you don't have a global middleware registred.
 # You can found this same declaration working on app/api/middlewares/setup_request.py
-
-@app.on_event("startup")
-async def startup_event():
-    db = get_database()
-    await connect_to_database(db)
-    logging.info(
-        "Starting Up..."
-    )
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await close_database_connection()
-    logging.info(
-        "Shutting Down"
-    )

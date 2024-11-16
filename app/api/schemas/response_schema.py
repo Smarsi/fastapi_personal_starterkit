@@ -1,6 +1,5 @@
-from pydantic import BaseModel, validator
-from typing import Any
-from typing import Optional
+from pydantic import BaseModel, field_validator
+from typing import Union, Any
 from datetime import time
 
 from app.utils.datetime_manager import get_current_time, calc_timelapse
@@ -12,8 +11,8 @@ from app.utils.datetime_manager import get_current_time, calc_timelapse
 #
 
 class Pagination(BaseModel):
-    current: Optional[Any] = ""
-    max_pages: Optional[Any] = ""
+    current: str = ""
+    max_pages: str = ""
 
     @staticmethod
     def json_model(self):
@@ -25,14 +24,14 @@ class Pagination(BaseModel):
 
 class GlobalResponse(BaseModel):
     status: bool
-    message: Optional[str] = ""
-    request_id: Optional[str] = ""
-    parameters: Optional[list] = []
-    start_ts: Optional[time] 
-    end_ts: Optional[time]
-    timelapse: Optional[time]
-    data: Optional[Any] = []
-    pagination: Optional[Pagination] = {}
+    message: str = ""
+    request_id: str = ""
+    parameters: list = []
+    start_ts: str = ""
+    end_ts: str = ""
+    timelapse: str = ""
+    data: Any = []
+    pagination: Union[Pagination, dict] = {}
 
     def set_start_ts(self, value):
         self.start_ts = value
@@ -56,7 +55,7 @@ class GlobalResponse(BaseModel):
             "pagination": {}
         }
     
-    @validator("data")
+    @field_validator("data")
     def grant_list(cls, data):
          if type(data) != list:
               return [data]

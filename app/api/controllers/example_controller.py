@@ -2,7 +2,7 @@
 from errors import APIError
 
 # Logs Import
-from logger_config import log_writer
+from logger_config import Logger, log_writer
 
 # Models Import
 from app.api.models.example_model import ExampleModel
@@ -10,7 +10,7 @@ from app.api.models.example_model import ExampleModel
 # Validators Import
 from app.api.validators.example_validator import ExampleValidator
 
-async def First_Endpoint_Controller(requester, log_file):
+async def First_Endpoint_Controller(requester, logger: Logger):
 
     ## Here you can put your business logic
 
@@ -25,7 +25,7 @@ async def First_Endpoint_Controller(requester, log_file):
     # If your controller don't have one model to return, you can use a Global Response Model (created, updated, deleted)
 
     # If you need to access database or other services, you can import them and use here (external requests, third-part-applications, etc);
-    # data = await example_dao.get_data_from_database(log_file)
+    # data = await example_dao.get_data_from_database(logger)
 
     data_on_model = ExampleModel(
         name="Test",

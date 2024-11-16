@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request, Body
 
 # Logs Import
-from logger_config import log_writer
+from logger_config import Logger, log_writer
 
 # Schema Import
 from app.api.schemas.response_schema import GlobalResponse, GlobaResponsesExamples, build_reponse_example
@@ -29,10 +29,10 @@ def get_tag_description():
 @router.get("/", response_model=GlobalResponse, response_model_exclude_unset=False, responses={**GlobaResponsesExamples, **build_reponse_example(200, ExampleModel, "Success - Example response doc for a GET 200O-OK")})
 # def First_Route(request: Request, requester: dict = Depends(verify_authentication), authorized: bool = Depends(verify_authorization)):
 async def First_Endpoint(request: Request, requester: dict = Depends(verify_authentication)):
-    log_file = request.state.log_file
-    log_writer(log_file, "First Route - Requested")
+    logger: Logger = request.state.logger
+    logger.write("First Route - Requested")
     
-    controller = await First_Endpoint_Controller(requester, log_file)
+    controller = await First_Endpoint_Controller(requester, logger)
 
     response = GlobalResponse(
         status=True,

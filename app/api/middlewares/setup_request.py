@@ -2,7 +2,7 @@ from uuid import uuid4 as uuid
 from fastapi import Request
 
 # Logs Import
-from logger_config import log_builder
+from logger_config import Logger
 
 from app.api.schemas.response_schema import GlobalResponse
 
@@ -17,7 +17,7 @@ from app.utils.datetime_manager import get_current_date, get_current_datetime, g
 
 async def setup_request(request: Request, call_next):
     request.state.uuid = str(uuid()).replace("-", "")
-    request.state.log_file = log_builder(request)
+    request.state.logger = Logger(file_id=request.state.uuid)
     request.state.start_ts = get_current_time()
 
     try:            
