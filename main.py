@@ -22,6 +22,7 @@ from app.api.routes import router, get_tags_description
 
 log = logging.getLogger("uvicorn")
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup event
