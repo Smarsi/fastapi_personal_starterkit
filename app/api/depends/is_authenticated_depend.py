@@ -1,4 +1,5 @@
-from fastapi import Request, HTTPException
+from fastapi import Depends, Request, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 # Logs Import
 from logger_config import Logger
@@ -11,13 +12,14 @@ from app.daos.user_dao import UserDAO
 # Utils Import
 from app.utils.token_manager import decode as token_decoder
 
+security = HTTPBearer()
 
-async def verify_authentication(request: Request):
+async def verify_authentication(request: Request, credentials: HTTPAuthorizationCredentials=Depends(security)):
     user_dao = UserDAO()
     logger: Logger = request.state.logger
-    authorization = request.headers.get('authorization')
-    if authorization:
-        token = str(authorization.split(" ")[1])
+    token = credentials.credentials
+
+    if token:
         decoded_token = await token_decoder(token)  # Passing token
         logger.write(f"VERIFY AUTHENTICATION - Result of decoded token {decoded_token}")
         user = await user_dao.get_user_by_token(token, logger)
