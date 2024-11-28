@@ -35,12 +35,12 @@ class UserDAO():
                         change_password
                     ) VALUES (
                         {id_user},
-                        '{data['username']}',
-                        '{data['email']}',
-                        '{data['password']}',
-                        '{data['created_at_ts']}',
-                        {data['created_by']},
-                        '{data['change_password']}'                      
+                        '{data.username}',
+                        '{data.email}',
+                        '{data.password}',
+                        '{data.created_at_ts}',
+                        {data.created_by},
+                        '{data.change_password}'                      
                     );
                      
         """)

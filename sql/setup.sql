@@ -1,3 +1,5 @@
+-- POSTGRESQL DATABASE SETUP
+
 # SYS USER DEFINITION
 
 -- drop table sys_user;
@@ -11,10 +13,10 @@ create table sys_user(
     email varchar(255),
     password varchar(255),
     created_at_ts timestamp,
-    createb_by integer,
+    created_by integer,
     change_password boolean,
+    last_login timestamp,
 
 
     constraint sys_user_pk primary key (id_user)    
 ) tablespace sys_data_ts;
-
